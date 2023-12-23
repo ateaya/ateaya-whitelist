@@ -4,11 +4,13 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+import {IAteayaWhitelist} from "./IAteayaWhitelist.sol";
+
 /**
  * @author  PRC
  * @title   Ateaya KYC Account Whitelist Smart Contract
  */
-contract AteayaWhitelist is Pausable, AccessControl {
+contract AteayaWhitelist is Pausable, AccessControl, IAteayaWhitelist {
     event Updated(uint256 hash, bool enabled);
 
     bytes32 private constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -35,7 +37,7 @@ contract AteayaWhitelist is Pausable, AccessControl {
      * @param   hash        The address hash to update -> hash = uint256(keccak256(abi.encodePacked(address)))
      * @param   whitelist   The whitelist state for the address hash.
      */
-    function update(uint256 hash, bool whitelist) public onlyRole(OPERATOR_ROLE) {
+    function update(uint256 hash, bool whitelist) public onlyRole(OPERATOR_ROLE) whenNotPaused {
         isWhitelisted[hash] = whitelist;
 
         emit Updated(hash, whitelist);
